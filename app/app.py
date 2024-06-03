@@ -49,11 +49,12 @@ class VideoCapture(qtc.QThread):
         while self.run_flag:
             ret, frame = cap.read()
             if ret:
-                self.change_pixmap_signal.emit(frame)
+                processed_frame = face_mask_prediction(frame)
+                self.change_pixmap_signal.emit(processed_frame)
 
                 # Update histogram every 5 seconds
                 if time.time() - last_histogram_time > 5:
-                    self.update_histogram_signal.emit(frame)
+                    self.update_histogram_signal.emit(processed_frame)
                     last_histogram_time = time.time()
 
         cap.release()# Release the video capture
@@ -162,6 +163,7 @@ class mainWindow(qtw.QWidget):
             if img is not None:
                 processed_image = face_mask_prediction(img)
                 self.updateImage(processed_image)
+                self.updateHistogram(processed_image)
             else:
                 print("failed to load image.")
     def stopCamera(self):
