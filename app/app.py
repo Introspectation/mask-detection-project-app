@@ -4,6 +4,7 @@ from PyQt5 import QtCore as qtc
 import sys
 import numpy as np
 import cv2
+from deeplearning import face_mask_prediction
 
 
 class VideoCapture(qtc.QThread):
@@ -21,9 +22,10 @@ class VideoCapture(qtc.QThread):
         
         while self.run_flag:
             ret, frame = cap.read() #BGR format
+            prediction_img = face_mask_prediction(frame)
             
             if ret == True:
-                self.change_pixmap_signal.emit(frame)
+                self.change_pixmap_signal.emit(prediction_img)
                 
                 
         cap.release()
